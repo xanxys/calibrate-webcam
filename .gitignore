@@ -1,0 +1,4 @@
+build/
+*.bc
+*.pexe
+.sconsign.dblite

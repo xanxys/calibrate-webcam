@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mkdir -p build
+rm -rf build/*
+cp static/* build/
+make
+cp hello_tutorial.pexe build/
