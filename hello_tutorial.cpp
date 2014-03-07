@@ -160,42 +160,90 @@ std::string convertImageToDataURL(const cv::Mat& image) {
 /// receive messages from the browser, and use PostMessage() to send messages
 /// back to the browser.  Note that this interface is asynchronous.
 class HelloTutorialInstance : public pp::Instance {
- public:
-  /// The constructor creates the plugin-side instance.
-  /// @param[in] instance the handle to the browser-side plugin instance.
-  explicit HelloTutorialInstance(PP_Instance instance) : pp::Instance(instance)
-  {}
-  virtual ~HelloTutorialInstance() {}
+public:
+    /// The constructor creates the plugin-side instance.
+    /// @param[in] instance the handle to the browser-side plugin instance.
+    explicit HelloTutorialInstance(PP_Instance instance) : pp::Instance(instance) {
+    }
 
-  /// Handler for messages coming in from the browser via postMessage().  The
-  /// @a var_message can contain be any pp:Var type; for example int, string
-  /// Array or Dictinary. Please see the pp:Var documentation for more details.
-  /// @param[in] var_message The message posted by the browser.
-  virtual void HandleMessage(const pp::Var& var_message) {
+    virtual ~HelloTutorialInstance() {
+    }
+
+    /// Handler for messages coming in from the browser via postMessage().  The
+    /// @a var_message can contain be any pp:Var type; for example int, string
+    /// Array or Dictinary. Please see the pp:Var documentation for more details.
+    /// @param[in] var_message The message posted by the browser.
+    virtual void HandleMessage(const pp::Var& var_message);
+private:
+    pp::VarDictionary handleNewImage(cv::Mat image);
+    pp::VarDictionary handleCalibration();
+
+    void log(std::string message);
+private:
+    std::vector<cv::Mat> img_points;
+};
+
+
+/// Handler for messages coming in from the browser via postMessage().  The
+/// @a var_message can contain be any pp:Var type; for example int, string
+/// Array or Dictinary. Please see the pp:Var documentation for more details.
+/// @param[in] var_message The message posted by the browser.
+void HelloTutorialInstance::HandleMessage(const pp::Var& var_message) {
     if(!var_message.is_dictionary()) {
-      return;
+        return;
     }
     const pp::VarDictionary& dict_message = reinterpret_cast<const pp::VarDictionary&>(var_message);
-    cv::Mat input = convertDataURLToImage(dict_message.Get("data").AsString());
-    if(!input.data) {
-      return;
-    }
+    const std::string message_type = dict_message.Get("type").AsString();
 
+    if(message_type == "image") {
+        cv::Mat input = convertDataURLToImage(dict_message.Get("data").AsString());
+        if(!input.data) {
+            return;
+        }
+
+        PostMessage(handleNewImage(input));
+    } else if(message_type == "calibrate") {
+        PostMessage(handleCalibration());
+    }
+}
+
+pp::VarDictionary HelloTutorialInstance::handleNewImage(cv::Mat input) {
+    log("Image Received");
     // Process
     // You can't use std::vector<cv::Vec2d> points; here (it compiles, but crashes in browser)
     // Might be related to http://code.opencv.org/issues/1551
     // (STL here & in OpenCV conflicts)
     cv::Mat points;
     const bool recog_success = cv::findChessboardCorners(input, cv::Size(8, 6), points);
+
+    log("Found corners " + std::to_string(points.rows));
+
     cv::drawChessboardCorners(input, cv::Size(8, 6), points, recog_success);
+    log("drawn corners");
+
+    if(recog_success) {
+        img_points.push_back(points);
+    }
 
     // Write image as data URI.
     pp::VarDictionary reply;
+    reply.Set("type", "image_result");
     reply.Set("success", recog_success);
     reply.Set("image_url", convertImageToDataURL(input));
+    return reply;
+}
+
+pp::VarDictionary HelloTutorialInstance::handleCalibration() {
+    pp::VarDictionary reply;
+    return reply;
+}
+
+void HelloTutorialInstance::log(std::string message) {
+    pp::VarDictionary reply;
+    reply.Set("type", "debug");
+    reply.Set("message", message);
     PostMessage(reply);
-  }
-};
+}
 
 /// The Module class.  The browser calls the CreateInstance() method to create
 /// an instance of your NaCl module on the web page.  The browser creates a new

@@ -1,4 +1,4 @@
-# Result binary crashes when runned in browser.
+# The binary crashes when executed in browser.
 # I suspect .cpp -> .o -> .bc -> .pexe conversion is wrong (make version is .cpp -> .bc -> .pexe)
 
 # default header
