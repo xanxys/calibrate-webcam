@@ -31,7 +31,8 @@ PNACL_TC_PATH := $(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_pnacl)
 PNACL_CXX := $(PNACL_TC_PATH)/bin/pnacl-clang++
 PNACL_FINALIZE := $(PNACL_TC_PATH)/bin/pnacl-finalize
 CXXFLAGS := -I$(NACL_SDK_ROOT)/include -I$(NACL_SDK_ROOT)/toolchain/linux_pnacl/usr/include
-LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi_cpp -lppapi -L$(NACL_SDK_ROOT)/toolchain/usr/lib -lopencv_highgui -lopencv_imgproc  -lopencv_core -lpng  -lz  -L$(NACL_SDK_ROOT)/toolchain/linux_pnacl/usr/share/OpenCV/3rdparty/lib -llibjpeg
+LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi_cpp -lppapi -L$(NACL_SDK_ROOT)/toolchain/usr/lib \
+	-lopencv_calib3d -lopencv_flann -lopencv_highgui -lopencv_features2d -lopencv_imgproc  -lopencv_core -lpng  -lz  -L$(NACL_SDK_ROOT)/toolchain/linux_pnacl/usr/share/OpenCV/3rdparty/lib -llibjpeg
 
 
 # Declare the ALL target first, to make the 'all' target the default build

@@ -131,6 +131,24 @@ void encode_base64(const std::vector<unsigned char>& src, std::string& dst)
     dst.swap(cdst);
 }
 
+// May return null image (.data == nullptr)
+cv::Mat convertDataURLToImage(const std::string& url) {
+    const std::string input_b64 = url.substr(url.find(",") + 1);
+    std::vector<uint8_t> input_data;
+    decode_base64(input_b64, input_data);
+
+    return cv::imdecode(cv::Mat(input_data), CV_LOAD_IMAGE_COLOR);
+}
+
+std::string convertImageToDataURL(const cv::Mat& image) {
+    std::vector<uint8_t> buffer;
+    cv::imencode(".jpg", image, buffer);
+
+    std::string buffer_b64;
+    encode_base64(buffer, buffer_b64);
+
+    return "data:image/jpeg;base64," + buffer_b64;
+}
 
 /// The Instance class.  One of these exists for each instance of your NaCl
 /// module on the web page.  The browser will ask the Module object to create
@@ -158,31 +176,24 @@ class HelloTutorialInstance : public pp::Instance {
       return;
     }
     const pp::VarDictionary& dict_message = reinterpret_cast<const pp::VarDictionary&>(var_message);
-
-    // Load image from data URI.
-    const std::string input_data_url = dict_message.Get("data").AsString();
-    const std::string input_b64 = input_data_url.substr(input_data_url.find(",") + 1);
-    std::vector<uint8_t> input_data;
-    decode_base64(input_b64, input_data);
-
-    const cv::Mat input = cv::imdecode(cv::Mat(input_data), CV_LOAD_IMAGE_COLOR);
+    cv::Mat input = convertDataURLToImage(dict_message.Get("data").AsString());
     if(!input.data) {
       return;
     }
 
     // Process
-    cv::Mat output;
-    cv::bilateralFilter(input, output, 0, 7, 7);
+    // You can't use std::vector<cv::Vec2d> points; here (it compiles, but crashes in browser)
+    // Might be related to http://code.opencv.org/issues/1551
+    // (STL here & in OpenCV conflicts)
+    cv::Mat points;
+    const bool recog_success = cv::findChessboardCorners(input, cv::Size(8, 6), points);
+    cv::drawChessboardCorners(input, cv::Size(8, 6), points, recog_success);
 
     // Write image as data URI.
-    std::vector<uint8_t> buffer;
-    cv::imencode(".jpg", output, buffer);
-
-    std::string buffer_b64;
-    encode_base64(buffer, buffer_b64);
-
-    const std::string data_url = "data:image/jpeg;base64," + buffer_b64;
-    PostMessage(pp::Var(data_url));
+    pp::VarDictionary reply;
+    reply.Set("success", recog_success);
+    reply.Set("image_url", convertImageToDataURL(input));
+    PostMessage(reply);
   }
 };
 

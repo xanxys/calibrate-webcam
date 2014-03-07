@@ -14,7 +14,7 @@ function moduleDidLoad() {
 // (in C) or pp::Instance.PostMessage() (in C++).  This implementation
 // simply displays the content of the message in an alert panel.
 function handleMessage(message_event) {
-  $('#result').append($('<img/>').attr('src', message_event.data));
+	$('#result').append($('<img/>').attr('src', message_event.data.image_url));
 }
 
 // If the page loads before the Native Client module loads, then set the
