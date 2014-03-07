@@ -8,48 +8,57 @@
 <head>
 
   <title>PNaCl / OpenCV (webcam effect)</title>
-  
+
   <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
   <script src="./jquery.webcam.js"></script>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
 
   <script type="text/javascript">
 
   </script>
 </head>
 <body onload="pageDidLoad()">
-
-  <h1>PNaCl / OpenCV (webcam effect)</h1>
-  <p>
-    <!--
-    Load the published pexe.
-    Note: Since this module does not use any real-estate in the browser, its
-    width and height are set to 0.
-
-    Note: The <embed> element is wrapped inside a <div>, which has both a 'load'
-    and a 'message' event listener attached.  This wrapping method is used
-    instead of attaching the event listeners directly to the <embed> element to
-    ensure that the listeners are active before the NaCl module 'load' event
-    fires.  This also allows you to use PPB_Messaging.PostMessage() (in C) or
-    pp::Instance.PostMessage() (in C++) from within the initialization code in
-    your module.
-    -->
-
-    <div id="video"></div>
-    <button id="ui_capture">Capture</button>
-
-    <div id="listener">
-      <embed id="hello_tutorial"
-             width=0 height=0
-             src="hello_tutorial.nmf"
-             type="application/x-pnacl" />
+  <div class="navbar nabvar-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand">Webcam Calibrator (PNaCl + OpenCV)</a>
+      </div>
     </div>
+  </div>
 
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3">
+        <h1>Webcam</h1>
+          <div id="video"></div>
+          <button class="btn btn-primary" id="ui_capture">Capture</button>
+
+          <div id="listener">
+            <embed id="hello_tutorial"
+                   width=0 height=0
+                   src="hello_tutorial.nmf"
+                   type="application/x-pnacl" />
+          </div>
+
+          <h2>PNaCl Status</h2>
+          <code id="statusField">NO-STATUS</code>
+      </div>
+
+      <div class="col-md-9">
+        <img src="check_6x8.png" width="100%"/>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="row">
     <div id="result">
     </div>
-  </p>
+  </div>
 
-  <h2>Status <code id="statusField">NO-STATUS</code></h2>
-  
   <script src="calibrate.js"></script>
 </body>
 </html>
