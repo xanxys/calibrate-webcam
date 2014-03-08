@@ -1,16 +1,12 @@
-HelloTutorialModule = null;  // Global application object.
+CalibrationModule = null;  // Global application object.
 statusText = 'NO-STATUS';
 
 // Indicate load success.
 function moduleDidLoad() {
-	HelloTutorialModule = document.getElementById('hello_tutorial');
+	CalibrationModule = document.getElementById('hello_tutorial');
 	updateStatus('SUCCESS');
 }
 
-// The 'message' event handler.  This handler is fired when the NaCl module
-// posts a message to the browser by calling PPB_Messaging.PostMessage()
-// (in C) or pp::Instance.PostMessage() (in C++).  This implementation
-// simply displays the content of the message in an alert panel.
 function handleMessage(event) {
 	var type = String(event.data.type);
 	if(type === 'debug') {
@@ -24,20 +20,7 @@ function handleMessage(event) {
 	}
 }
 
-// If the page loads before the Native Client module loads, then set the
-// status message indicating that the module is still loading.  Otherwise,
-// do not change the status message.
-function pageDidLoad() {
-  if (HelloTutorialModule == null) {
-    updateStatus('LOADING...');
-  } else {
-    // It's possible that the Native Client module onload event fired
-    // before the page's onload event.  In this case, the status message
-    // will reflect 'SUCCESS', but won't be displayed.  This call will
-    // display the current message.
-    updateStatus();
-  }
-}
+
 
 // Set the global status message.  If the element with id 'statusField'
 // exists, then set its HTML to the status message as well.
@@ -87,7 +70,7 @@ $("#video").webcam({
 			console.log('Image size(data URL): ', canvas.toDataURL().length);
 			canvas.getContext('2d').putImageData(img, 0, 0);
 
-			HelloTutorialModule.postMessage({
+			CalibrationModule.postMessage({
 				"type": "image",
 				"data": canvas.toDataURL()
 			});
@@ -102,12 +85,21 @@ $("#video").webcam({
 	onLoad: function() {}
 });
 
+$(document).ready(function() {
+	if (CalibrationModule == null) {
+		updateStatus('LOADING...');
+	} else {
+		updateStatus();
+	}
+});
+
+
 $('#ui_capture').click(function() {
 	webcam.capture();
 });
 
 $('#ui_calibrate').click(function() {
-	HelloTutorialModule.postMessage({
+	CalibrationModule.postMessage({
 		"type": "calibrate"
 	});
 });

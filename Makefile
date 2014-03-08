@@ -36,13 +36,13 @@ LDFLAGS := -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi_cpp -lppapi -L$(NACL_SDK
 
 
 # Declare the ALL target first, to make the 'all' target the default build
-all: hello_tutorial.pexe
+all: calibrate.pexe
 
 clean:
-	$(RM) hello_tutorial.pexe hello_tutorial.bc
+	$(RM) calibrate.pexe calibrate.bc
 
-hello_tutorial.bc: hello_tutorial.cpp
+calibrate.bc: calibrate.cpp
 	$(PNACL_CXX) -o $@ $< -O2 $(CXXFLAGS) $(LDFLAGS)
 
-hello_tutorial.pexe: hello_tutorial.bc
+calibrate.pexe: calibrate.bc
 	$(PNACL_FINALIZE) -o $@ $<
