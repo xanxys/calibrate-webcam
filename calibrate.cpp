@@ -196,7 +196,7 @@ void HelloTutorialInstance::HandleMessage(const pp::Var& var_message) {
     const pp::VarDictionary& dict_message = reinterpret_cast<const pp::VarDictionary&>(var_message);
     const std::string message_type = dict_message.Get("type").AsString();
 
-    if(message_type == "image") {
+    if(message_type == "process_image") {
         cv::Mat input = convertDataURLToImage(dict_message.Get("data").AsString());
         if(!input.data) {
             return;
