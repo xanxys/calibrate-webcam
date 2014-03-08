@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8"/>
   <title>Webcam Calibrator</title>
 
   <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -86,6 +87,9 @@
           Parameters are compatible with
           <a href="http://docs.opencv.org/doc/tutorials/calib3d/camera_calibration/camera_calibration.html">OpenCV Camera Model</a>. In fact,  cv::calibrateCamera is used under the hood.
           </p>
+          
+          <h2>Reprojection Error</h2>
+          <pre id="ui_reproj_error"></pre>
           
           <h2>Intrinsic Parameters</h2>
           <pre id="ui_result_json">

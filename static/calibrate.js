@@ -69,7 +69,7 @@ WebcamCalibrator.prototype._bind = function() {
 	$(document).ready(function() {
 		if(!isPNaClSupported()) {
 			$('#ui_status').empty();
-			$('#ui_status').append('PNaCl is not supported on your browser.');
+			$('#ui_status').append('PNaCl is not supported on your browser. ');
 			$('#ui_status').append('<a href="https://google.com/chrome">Get the latest Chrome.</a>');
 			return;
 		}
@@ -137,6 +137,7 @@ WebcamCalibrator.prototype._onCalibration = function(data) {
 	console.log('Calibration result', data);
 	$('#ui_target').hide();
 
+	$('#ui_reproj_error').text(data.error);
 	$('#ui_result_json').text(JSON.stringify(data.intrinsic, null, 2));
 	$('#ui_result').show('slide');
 };
