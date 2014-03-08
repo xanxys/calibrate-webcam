@@ -53,17 +53,27 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3">
-          <div id="video"></div>
-          mode: 320×240<br/>
-          <button class="btn btn-primary disabled" id="ui_capture">Capture</button>
-
-          <h2><span id="ui_num_good">0</span> Good Photos</h2>
-          <button class="btn btn-primary" id="ui_calibrate">Calibrate</button>
-
-          <div id="result">
-          </div>
-
-
+        <div id="video"></div>
+        <span class="label label-info">Mode: 320×240</span>
+        <br/>
+        <br/>
+        <button class="btn btn-primary disabled" id="ui_capture">Capture</button>
+        <br/>
+        <br/>
+        
+        <div class="input-group-lg">
+        <span class="input-group-addon">
+          <span id="ui_num_good">0</span> Good Photos
+        </span>
+          
+          <span class="input-group-btn">
+            <button class="btn btn-primary disabled" id="ui_calibrate">Calibrate</button>
+          </span>
+        </div>
+        
+        <br/>
+        <div id="result">
+        </div>
       </div>
     
       <!-- three modes: 0:loading 1:capturing 2:result -->
@@ -90,7 +100,7 @@
           
           <h2>Reprojection Error</h2>
           <pre id="ui_reproj_error"></pre>
-          
+
           <h2>Intrinsic Parameters</h2>
           <pre id="ui_result_json">
           </pre>

@@ -112,14 +112,15 @@ WebcamCalibrator.prototype._bind = function() {
 	});
 
 	$('#ui_calibrate').click(function() {
-		$('#ui_capture').hide();
-		$('#ui_calibrate').hide();
+		$('#ui_capture').addClass('disabled');
+		$('#ui_calibrate').addClass('disabled');
+
 		_this._sendCommand('calibrate', {});
 	});
 
 	$('#ui_more').click(function() {
-		$('#ui_capture').show();
-		$('#ui_calibrate').show();
+		$('#ui_calibrate').removeClass('disabled');
+		$('#ui_capture').removeClass('disabled');
 
 		$('#ui_result').hide();
 		$('#ui_target').show('slide');
@@ -150,6 +151,10 @@ WebcamCalibrator.prototype._onImageResult = function(data) {
 		});
 		this.num_good += 1;
 		$('#ui_num_good').text(this.num_good);
+
+		if(this.num_good >= 1) {
+			$('#ui_calibrate').removeClass('disabled');
+		}
 	} else {
 		$.toast("Couldn't detect the chessboard.", {
 			type: 'danger',
