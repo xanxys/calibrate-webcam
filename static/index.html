@@ -38,7 +38,7 @@
           mode: 320×240<br/>
           <button class="btn btn-primary disabled" id="ui_capture">Capture</button>
 
-          <h2>Photos</h2>
+          <h2><span id="ui_num_good">0</span> Good Photos</h2>
           <button class="btn btn-primary" id="ui_calibrate">Calibrate</button>
 
           <div id="result">
@@ -72,6 +72,9 @@
           <h2>Intrinsic Parameters</h2>
           <pre id="ui_result_json">
           </pre>
+          
+          <br/>
+          <button id="ui_more" class="btn btn-default">Take More Photos</button>
         </div>
       </div>
     </div>
