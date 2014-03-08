@@ -33,9 +33,6 @@
                    type="application/x-pnacl" />
           </div>
 
-          <h2>PNaCl Status</h2>
-          <code id="statusField">NO-STATUS</code>
-
           <h2>Photos</h2>
           <button class="btn btn-primary" id="ui_calibrate">Calibrate</button>
           <div id="result">
@@ -43,7 +40,17 @@
       </div>
 
       <div class="col-md-9">
-        <img src="check_6x8.png" width="100%"/>
+        <div id="ui_status">
+          Loading PNaCl module.
+          <div class="progress progress-striped active">
+            <div class="progress-bar"  role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+            </div>
+          </div>
+        </div>
+
+        <div id="ui_target" style="display:none">
+          <img src="check_6x8.png" width="100%"/>
+        </div>
       </div>
     </div>
   </div>

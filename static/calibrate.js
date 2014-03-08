@@ -1,44 +1,8 @@
-CalibrationModule = null;  // Global application object.
-statusText = 'NO-STATUS';
+var CalibrationModule = null;
 
-// Indicate load success.
-function moduleDidLoad() {
-	CalibrationModule = document.getElementById('hello_tutorial');
-	updateStatus('SUCCESS');
+function isPNaClSupported() {
+	return navigator.mimeTypes['application/x-pnacl'] !== undefined;
 }
-
-function handleMessage(event) {
-	var type = String(event.data.type);
-	if(type === 'debug') {
-		console.log('PNaCl module:', String(event.data.message));
-	} else if(type === 'calibration') {
-		console.log('Calibration result', event.data);
-	} else if(type === 'image_result') {
-		$('#result').append($('<img/>').attr('src', event.data.image_url));
-	} else {
-		console.log('Unknown message from PNaCl module:', event);
-	}
-}
-
-
-
-// Set the global status message.  If the element with id 'statusField'
-// exists, then set its HTML to the status message as well.
-// opt_message The message test.  If this is null or undefined, then
-// attempt to set the element with id 'statusField' to the value of
-// |statusText|.
-function updateStatus(opt_message) {
-  if (opt_message)
-    statusText = opt_message;
-  var statusField = document.getElementById('statusField');
-  if (statusField) {
-    statusField.innerHTML = statusText;
-  }
-}
-
-var listener = document.getElementById('listener');
-listener.addEventListener('load', moduleDidLoad, true);
-listener.addEventListener('message', handleMessage, true);
 
 var pos = 0;
 
@@ -86,13 +50,44 @@ $("#video").webcam({
 });
 
 $(document).ready(function() {
-	if (CalibrationModule == null) {
-		updateStatus('LOADING...');
-	} else {
-		updateStatus();
+	if(!isPNaClSupported()) {
+		$('#ui_status').empty();
+		$('#ui_status').append('PNaCl is not supported on your browser.');
+		$('#ui_status').append('<a href="https://google.com/chrome">Get the latest Chrome.</a>');
+		return;
 	}
 });
 
+// jQuery .bind doesn't work.
+$('#listener')[0].addEventListener('progress', function(event) {
+	// Calculate [0, 1] progress.
+	var progress =
+		(event.lengthComputable && event.total > 0) ?
+		(event.loaded / event.total) :
+		0.1;
+
+	$('.progress-bar').css('width', progress * 100 + '%');
+}, true);
+
+$('#listener')[0].addEventListener('load', function() {
+	console.log('AAA');
+	$('#ui_status').text('PNaCl module loaded successfully');
+	$('#ui_status').hide();
+	$('#ui_target').show();
+}, true);
+
+$('#listener')[0].addEventListener('message', function(event) {
+	var type = String(event.data.type);
+	if(type === 'debug') {
+		console.log('PNaCl module:', String(event.data.message));
+	} else if(type === 'calibration') {
+		console.log('Calibration result', event.data);
+	} else if(type === 'image_result') {
+		$('#result').append($('<img/>').attr('src', event.data.image_url));
+	} else {
+		console.log('Unknown message from PNaCl module:', event);
+	}
+}, true);
 
 $('#ui_capture').click(function() {
 	webcam.capture();
