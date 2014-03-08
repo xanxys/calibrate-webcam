@@ -180,7 +180,8 @@ private:
 
     void log(std::string message);
 private:
-    std::vector<cv::Mat> img_points;
+    std::vector<std::vector<cv::Vec2f>> sets_points_image;
+    std::vector<std::vector<cv::Vec3f>> sets_points_world;
 };
 
 
@@ -204,25 +205,33 @@ void HelloTutorialInstance::HandleMessage(const pp::Var& var_message) {
         PostMessage(handleNewImage(input));
     } else if(message_type == "calibrate") {
         PostMessage(handleCalibration());
+    } else {
+        log("Unknown message type: " + message_type);
     }
 }
 
 pp::VarDictionary HelloTutorialInstance::handleNewImage(cv::Mat input) {
     log("Image Received");
     // Process
-    // You can't use std::vector<cv::Vec2d> points; here (it compiles, but crashes in browser)
-    // Might be related to http://code.opencv.org/issues/1551
-    // (STL here & in OpenCV conflicts)
-    cv::Mat points;
-    const bool recog_success = cv::findChessboardCorners(input, cv::Size(8, 6), points);
+    std::vector<cv::Vec2f> points_v;
+    const bool recog_success = cv::findChessboardCorners(input, cv::Size(8, 6), points_v);
 
-    log("Found corners " + std::to_string(points.rows));
+    log("Found corners " + std::to_string(points_v.size()));
 
-    cv::drawChessboardCorners(input, cv::Size(8, 6), points, recog_success);
+    cv::drawChessboardCorners(input, cv::Size(8, 6), points_v, recog_success);
     log("drawn corners");
 
     if(recog_success) {
-        img_points.push_back(points);
+        sets_points_image.push_back(points_v);
+
+        std::vector<cv::Vec3f> points_world;
+        const float size = 0.03;  // meter
+        for(int i = 0; i < 6; i++) {
+            for(int j = 0; j < 8; j++) {
+                points_world.push_back(cv::Vec3f(i * size, j * size, 0));
+            }
+        }
+        sets_points_world.push_back(points_world);
     }
 
     // Write image as data URI.
@@ -234,7 +243,28 @@ pp::VarDictionary HelloTutorialInstance::handleNewImage(cv::Mat input) {
 }
 
 pp::VarDictionary HelloTutorialInstance::handleCalibration() {
+    log("Start calibrating");
+
+    // Convert to old format.
+    log("Calibrating");
+    cv::Mat intrinsic;
+    std::vector<cv::Mat> rotations;
+    std::vector<cv::Mat> translations;
+    cv::Mat coeff;
+    //cv::Mat intrinsic, rotations, translations, coeff;
+
+    assert(sets_points_image.size() == sets_points_world.size());
+    assert(sets_points_image[0].size() == sets_points_world[0].size());
+
+    const double error = cv::calibrateCamera(
+        sets_points_world, sets_points_image,
+        cv::Size(320, 240),
+        intrinsic, coeff, rotations, translations);
+
     pp::VarDictionary reply;
+    reply.Set("type", "calibration");
+    //reply.Set("intrinsic_fx", intrinsic(0, 0));
+    //reply.Set("intrinsic_fy", intrinsic(1, 1));
     return reply;
 }
 
@@ -249,16 +279,16 @@ void HelloTutorialInstance::log(std::string message) {
 /// an instance of your NaCl module on the web page.  The browser creates a new
 /// instance for each <embed> tag with type="application/x-pnacl".
 class HelloTutorialModule : public pp::Module {
- public:
-  HelloTutorialModule() : pp::Module() {}
-  virtual ~HelloTutorialModule() {}
+public:
+    HelloTutorialModule() : pp::Module() {}
+    virtual ~HelloTutorialModule() {}
 
-  /// Create and return a HelloTutorialInstance object.
-  /// @param[in] instance The browser-side instance.
-  /// @return the plugin-side instance.
-  virtual pp::Instance* CreateInstance(PP_Instance instance) {
+    /// Create and return a HelloTutorialInstance object.
+    /// @param[in] instance The browser-side instance.
+    /// @return the plugin-side instance.
+    virtual pp::Instance* CreateInstance(PP_Instance instance) {
     return new HelloTutorialInstance(instance);
-  }
+    }
 };
 
 namespace pp {
@@ -268,6 +298,6 @@ namespace pp {
 /// is one instance per <embed> tag on the page.  This is the main binding
 /// point for your NaCl module with the browser.
 Module* CreateModule() {
-  return new HelloTutorialModule();
+    return new HelloTutorialModule();
 }
 }  // namespace pp

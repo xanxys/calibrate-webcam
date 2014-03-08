@@ -12,10 +12,15 @@ function moduleDidLoad() {
 // (in C) or pp::Instance.PostMessage() (in C++).  This implementation
 // simply displays the content of the message in an alert panel.
 function handleMessage(event) {
-	if(String(event.data.type) === 'debug') {
+	var type = String(event.data.type);
+	if(type === 'debug') {
 		console.log('PNaCl module:', String(event.data.message));
-	} else {
+	} else if(type === 'calibration') {
+		console.log('Calibration result', event.data);
+	} else if(type === 'image_result') {
 		$('#result').append($('<img/>').attr('src', event.data.image_url));
+	} else {
+		console.log('Unknown message from PNaCl module:', event);
 	}
 }
 
@@ -99,4 +104,10 @@ $("#video").webcam({
 
 $('#ui_capture').click(function() {
 	webcam.capture();
+});
+
+$('#ui_calibrate').click(function() {
+	HelloTutorialModule.postMessage({
+		"type": "calibrate"
+	});
 });
