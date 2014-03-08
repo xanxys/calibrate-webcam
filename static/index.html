@@ -18,27 +18,31 @@
       </div>
     </div>
   </div>
+  
+  <div id="listener">
+    <embed id="calibration_module"
+      width=0 height=0
+      src="calibrate.nmf"
+      type="application/x-pnacl" />
+  </div>
 
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-3">
-        <h1>Webcam</h1>
           <div id="video"></div>
-          <button class="btn btn-primary" id="ui_capture">Capture</button>
-
-          <div id="listener">
-            <embed id="calibration_module"
-                   width=0 height=0
-                   src="calibrate.nmf"
-                   type="application/x-pnacl" />
-          </div>
+          mode: 320×240<br/>
+          <button class="btn btn-primary disabled" id="ui_capture">Capture</button>
 
           <h2>Photos</h2>
           <button class="btn btn-primary" id="ui_calibrate">Calibrate</button>
+
           <div id="result">
           </div>
-      </div>
 
+
+      </div>
+    
+      <!-- three modes: 0:loading 1:capturing 2:result -->
       <div class="col-md-9">
         <div id="ui_status">
           Loading PNaCl module.
@@ -47,9 +51,16 @@
             </div>
           </div>
         </div>
-
+        
+        <!-- TODO: adaptive target size -->
         <div id="ui_target" style="display:none">
-          <img src="check_6x8.png" width="100%"/>
+          <img src="check_6x8.png" width="90%"/>
+        </div>
+
+        <div id="ui_result" style="display: none">
+          <h1>Calibration Result</h1>
+          <pre id="ui_result_json">
+          </pre>
         </div>
       </div>
     </div>

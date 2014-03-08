@@ -2,6 +2,7 @@ function isPNaClSupported() {
 	return navigator.mimeTypes['application/x-pnacl'] !== undefined;
 }
 
+
 var WebcamCalibrator = function() {
 	this._initCapture(320, 240);
 	this._bind();
@@ -81,7 +82,9 @@ WebcamCalibrator.prototype._bind = function() {
 	$('#listener')[0].addEventListener('load', function() {
 		$('#ui_status').text('PNaCl module loaded successfully');
 		$('#ui_status').hide();
-		$('#ui_target').show('blind');
+		$('#ui_target').show('slide');
+
+		$('#ui_capture').removeClass('disabled');
 	}, true);
 
 	$('#listener')[0].addEventListener('message', function(event) {
@@ -89,9 +92,9 @@ WebcamCalibrator.prototype._bind = function() {
 		if(type === 'debug') {
 			console.log('PNaCl module:', String(event.data.message));
 		} else if(type === 'calibration') {
-			console.log('Calibration result', event.data);
+			_this._onCalibration(event.data);
 		} else if(type === 'image_result') {
-			$('#result').append($('<img/>').attr('src', event.data.image_url));
+			_this._onImageResult(event.data);
 		} else {
 			console.log('Unknown message from PNaCl module:', event);
 		}
@@ -111,6 +114,21 @@ WebcamCalibrator.prototype._sendCommand = function(command, args) {
 	message['type'] = command;
 
 	$('#calibration_module')[0].postMessage(message);
+};
+
+WebcamCalibrator.prototype._onCalibration = function(data) {
+	console.log('Calibration result', data);
+	$('#ui_target').hide();
+
+	$('#ui_result_json').text(JSON.stringify(data.intrinsic, null, 2));
+	$('#ui_result').show('slide');
+};
+
+WebcamCalibrator.prototype._onImageResult = function(data) {
+	$('#result').append(
+		$('<img/>')
+			.attr('src', data.image_url)
+			.attr('width', '80px'));
 };
 
 var wc = new WebcamCalibrator();
