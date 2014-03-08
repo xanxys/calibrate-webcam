@@ -59,7 +59,9 @@ WebcamCalibrator.prototype._initCapture = function(width, height) {
 			webcam.save();
 		},
 		debug: function() {},
-		onLoad: function() {}
+		onLoad: function() {
+			$('#ui_webcam_status').hide();
+		}
 	});
 };
 
