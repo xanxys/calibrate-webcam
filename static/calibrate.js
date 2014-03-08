@@ -4,6 +4,9 @@ function isPNaClSupported() {
 
 
 var WebcamCalibrator = function() {
+	$.toast.config.width = 400;
+	$.toast.config.align = 'left';
+
 	this._initCapture(320, 240);
 	this._bind();
 };
@@ -125,6 +128,18 @@ WebcamCalibrator.prototype._onCalibration = function(data) {
 };
 
 WebcamCalibrator.prototype._onImageResult = function(data) {
+	if(data.success) {
+		$.toast('Captured!', {
+			type: 'success',
+			duration: 1500,
+		});
+	} else {
+		$.toast("Couldn't detect the chessboard.", {
+			type: 'danger',
+			duration: 5000,
+		});
+	}
+
 	$('#result').append(
 		$('<img/>')
 			.attr('src', data.image_url)
