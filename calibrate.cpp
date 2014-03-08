@@ -243,28 +243,46 @@ pp::VarDictionary HelloTutorialInstance::handleNewImage(cv::Mat input) {
 }
 
 pp::VarDictionary HelloTutorialInstance::handleCalibration() {
-    log("Start calibrating");
-
-    // Convert to old format.
-    log("Calibrating");
-    cv::Mat intrinsic;
-    std::vector<cv::Mat> rotations;
-    std::vector<cv::Mat> translations;
-    cv::Mat coeff;
-    //cv::Mat intrinsic, rotations, translations, coeff;
+    const int camera_width = 320;
+    const int camera_height = 240;
 
     assert(sets_points_image.size() == sets_points_world.size());
     assert(sets_points_image[0].size() == sets_points_world[0].size());
 
+    log("Start calibrating");
+    cv::Mat_<float> intrinsic;
+    std::vector<cv::Mat> rotations;
+    std::vector<cv::Mat> translations;
+    cv::Mat_<float> coeff;
+
     const double error = cv::calibrateCamera(
         sets_points_world, sets_points_image,
-        cv::Size(320, 240),
+        cv::Size(camera_width, camera_height),
         intrinsic, coeff, rotations, translations);
 
     pp::VarDictionary reply;
     reply.Set("type", "calibration");
-    //reply.Set("intrinsic_fx", intrinsic(0, 0));
-    //reply.Set("intrinsic_fy", intrinsic(1, 1));
+
+    reply.Set("error", error);
+
+    pp::VarDictionary result_intrinsic;
+    result_intrinsic.Set("width", camera_width);
+    result_intrinsic.Set("height", camera_height);
+    result_intrinsic.Set("fx", intrinsic(0, 0));
+    result_intrinsic.Set("fy", intrinsic(1, 1));
+    result_intrinsic.Set("cx", intrinsic(0, 2));
+    result_intrinsic.Set("cy", intrinsic(1, 2));
+
+    pp::VarDictionary result_distortion;
+    result_distortion.Set("type", "radial+tangential");
+    result_distortion.Set("k1", coeff(0));
+    result_distortion.Set("k2", coeff(1));
+    result_distortion.Set("p1", coeff(2));
+    result_distortion.Set("p2", coeff(3));
+
+    result_intrinsic.Set("distortion", result_distortion);
+
+    reply.Set("intrinsic", result_intrinsic);
     return reply;
 }
 
