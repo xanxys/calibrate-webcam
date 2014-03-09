@@ -16,6 +16,8 @@ var WebcamCalibrator = function() {
 };
 
 WebcamCalibrator.prototype._initCapture = function(width, height) {
+	
+
 	var _this = this;
 
 	var pos = 0;
@@ -61,6 +63,9 @@ WebcamCalibrator.prototype._initCapture = function(width, height) {
 		debug: function() {},
 		onLoad: function() {
 			$('#ui_webcam_status').hide();
+
+			console.log(webcam.getCameraList());
+			$('#ui_product').text(webcam.getCameraList()[0]);
 		}
 	});
 };
