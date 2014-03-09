@@ -6,6 +6,7 @@ function isPNaClSupported() {
 var WebcamCalibrator = function() {
 	// model
 	this.num_good = 0;
+	this.webcam_name = 'Generic Webcam';
 
 	// view
 	$.toast.config.width = 400;
@@ -65,7 +66,9 @@ WebcamCalibrator.prototype._initCapture = function(width, height) {
 			$('#ui_webcam_status').hide();
 
 			console.log(webcam.getCameraList());
-			$('#ui_product').text(webcam.getCameraList()[0]);
+
+			_this.webcam_name = webcam.getCameraList()[0];
+			$('#ui_product').text(_this.webcam_name);
 		}
 	});
 };
@@ -145,8 +148,10 @@ WebcamCalibrator.prototype._onCalibration = function(data) {
 	console.log('Calibration result', data);
 	$('#ui_target').hide();
 
+	var result = _.clone(data.intrinsic);
+	result.camera = this.webcam_name;
 	$('#ui_reproj_error').text(data.error);
-	$('#ui_result_json').text(JSON.stringify(data.intrinsic, null, 2));
+	$('#ui_result_json').text(JSON.stringify(result, null, 2));
 	$('#ui_result').show('slide');
 };
 
