@@ -42,7 +42,7 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-  
+
   <div id="listener">
     <embed id="calibration_module"
       width=0 height=0
@@ -63,22 +63,22 @@
         <button class="btn btn-primary disabled" id="ui_capture">Capture</button>
         <br/>
         <br/>
-        
+
         <div class="input-group-lg">
         <span class="input-group-addon">
           <span id="ui_num_good">0</span> Good Photos
         </span>
-          
+
           <span class="input-group-btn">
             <button class="btn btn-primary disabled" id="ui_calibrate">Calibrate</button>
           </span>
         </div>
-        
+
         <br/>
         <div id="result">
         </div>
       </div>
-    
+
       <!-- three modes: 0:loading 1:capturing 2:result -->
       <div class="col-md-9">
         <div id="ui_status">
@@ -88,7 +88,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- TODO: adaptive target size -->
         <div id="ui_target" style="display:none">
           <img src="check_6x8.png" width="90%"/>
@@ -100,14 +100,14 @@
           Parameters are compatible with
           <a href="http://docs.opencv.org/doc/tutorials/calib3d/camera_calibration/camera_calibration.html">OpenCV Camera Model</a>. In fact,  cv::calibrateCamera is used under the hood.
           </p>
-          
+
           <h2>Reprojection Error</h2>
           <pre id="ui_reproj_error"></pre>
 
           <h2>Intrinsic Parameters</h2>
           <pre id="ui_result_json">
           </pre>
-          
+
           <br/>
           <button id="ui_more" class="btn btn-default">Take More Photos</button>
         </div>

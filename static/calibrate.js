@@ -17,7 +17,7 @@ var WebcamCalibrator = function() {
 };
 
 WebcamCalibrator.prototype._initCapture = function(width, height) {
-	
+
 
 	var _this = this;
 
